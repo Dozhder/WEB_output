@@ -5,6 +5,10 @@ from data.jobs import Jobs
 import datetime as dt
 
 
+db_session.global_init('db/data_test.sqlite3')
+
+db_sess = db_session.create_session()
+
 job = Jobs()
 job.team_leader =  1
 job.job = 'deployment of residential modules 1 and 2'
