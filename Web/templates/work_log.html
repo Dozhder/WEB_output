@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Миссия колонизация Марса</title>
+</head>
+<body>
+  <p>И на Марсе будут яблони цвести</p>
+  <h1>Works Log</h1>
+  <table>
+    <colgroup>
+        <col style="background-color: yellow">
+        <col style="background-color: lightblue">
+    </colgroup>
+    <caption>Action # {{ id_action }}</caption>
+    <thead>
+      <tr>
+        <th>Title of activity</th>
+        <th>Team leader</th>
+        <th>Duration</th>
+        <th>List of collaborators</th>
+        <th>Is finished</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>{{ title_activity }}</td>
+        <td>{{ teamlead }}</td>
+        <td>{{ duration }}</td>
+        <td>{{ list_of_collaboration }}</td>
+        <td>{{ is_finished }}</td>
+      </tr>
+    </tbody>
+  </table>
