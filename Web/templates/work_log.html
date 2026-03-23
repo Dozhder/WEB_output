@@ -6,16 +6,10 @@
   <title>Миссия колонизация Марса</title>
 </head>
 <body>
-  <p>И на Марсе будут яблони цвести</p>
-  <h1>Works Log</h1>
-  <table>
-    <colgroup>
-        <col style="background-color: yellow">
-        <col style="background-color: lightblue">
-    </colgroup>
+  <table style="table-layout: fixed; width: 70%; text-align: center">
     <caption>Action # {{ id_action }}</caption>
     <thead>
-      <tr>
+      <tr style="background-color: gray">
         <th>Title of activity</th>
         <th>Team leader</th>
         <th>Duration</th>
@@ -24,12 +18,16 @@
       </tr>
     </thead>
     <tbody>
-      <tr>
+      <tr style="background-color: lightblue">
         <td>{{ title_activity }}</td>
         <td>{{ teamlead }}</td>
         <td>{{ duration }}</td>
         <td>{{ list_of_collaboration }}</td>
-        <td>{{ is_finished }}</td>
+        {% if is_finished == True %}
+              <td style="background-color: #9966cc">is finished</td>
+        {% else %}
+              <td style="background-color: #9966cc">is not finished</td>
+        {% endif %}
       </tr>
     </tbody>
   </table>
