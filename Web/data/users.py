@@ -1,7 +1,9 @@
 import datetime
 import sqlalchemy
+from sqlalchemy import orm
 from .db_session import SqlAlchemyBase
 from werkzeug.security import generate_password_hash, check_password_hash
+
 
 class User(SqlAlchemyBase):
     __tablename__ = 'users'
@@ -18,6 +20,8 @@ class User(SqlAlchemyBase):
                               index=True, unique=True, nullable=True)
     hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     modified_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
+
+    department = orm.relationship('Department', back_populates='user')
 
 
     def set_password(self, password):
