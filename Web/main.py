@@ -3,7 +3,7 @@ from data import db_session
 from data.users import User
 from data.jobs import Jobs
 import datetime as dt
-from forms.user import RegisterForm
+from forms.register import RegisterForm
 
 
 app = Flask(__name__)
