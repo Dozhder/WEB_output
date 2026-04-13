@@ -1,33 +1,33 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Миссия колонизация Марса</title>
-</head>
-<body>
-  <table style="table-layout: fixed; width: 70%; text-align: center">
-    <caption style="font-size: 24">Action # {{ id_action }}</caption>
-    <thead>
-      <tr style="background-color: gray">
-        <th>Title of activity</th>
-        <th>Team leader</th>
-        <th>Duration</th>
-        <th>List of collaborators</th>
-        <th>Is finished</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr style="background-color: lightblue">
-        <td>{{ title_activity }}</td>
-        <td>{{ teamlead }}</td>
-        <td>{{ duration }}</td>
-        <td>{{ list_of_collaboration }}</td>
-        {% if is_finished == True %}
-              <td style="background-color: #9966cc">is finished</td>
-        {% else %}
-              <td style="background-color: #9966cc">is not finished</td>
-        {% endif %}
-      </tr>
-    </tbody>
-  </table>
+{% extends "base.html" %}
+
+{% block content %}
+  <h2 style="text-align: center">Work Log</h2>
+  {% for work in works %}
+    <table align="center" style="table-layout: fixed; width: 70%; text-align: center">
+      <caption style="font-size: 48; caption-side: top; font-color: black; text-align: center">Action # {{ work["id_action"] }}</caption>
+      <thead>
+        <tr style="background-color: gray">
+          <th>Title of activity</th>
+          <th>Team leader</th>
+          <th>Duration</th>
+          <th>List of collaborators</th>
+          <th>Is finished</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="background-color: lightblue">
+          <td>{{ work["title_activity"] }}</td>
+          <td>{{ work["teamlead"] }}</td>
+          <td>{{ work["duration"] }}</td>
+          <td>{{ work["list_of_collaboration"] }}</td>
+          {% if work["is_finished"] == True %}
+                <td style="background-color: #9966cc">is finished</td>
+          {% else %}
+                <td style="background-color: #9966cc">is not finished</td>
+          {% endif %}
+        </tr>
+      </tbody>
+    </table>
+    <br>
+  {% endfor %}
+{% endblock %}

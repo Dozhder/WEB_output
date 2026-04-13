@@ -4,12 +4,24 @@ from data.users import User
 from data.jobs import Jobs
 import datetime as dt
 from forms.register import RegisterForm
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+from forms.login import LoginForm
+from forms.add_work import AddWorkForm
 
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 
 db_session.global_init('db/data_test.sqlite3')
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    db_sess = db_session.create_session()
+    return db_sess.get(User,user_id)
 
 
 def main():
@@ -23,16 +35,18 @@ def test():
 
 
 @app.route('/')
-@app.route('/login')
 def home():
-    db_sess = db_session.create_session()
-    render = ["""<p style="text-color: gray">И на марсе будут ябкони цвести</p>
-                <h1 style="text-align: center">Works Log</h1>"""]
-    for job in db_sess.query(Jobs).all():
-        render.append(render_template('work_log.html', id_action=job.id, title_activity=job.job,
-                               teamlead=job.team_leader, duration=job.work_size,
-                               list_of_collaboration=job.collaborators, is_finished=job.is_finished))
-    return '<br>'.join(render)
+    if current_user.is_authenticated:
+        db_sess = db_session.create_session()
+        render = []
+        for job in db_sess.query(Jobs).all():
+            render.append({'id_action': job.id, 'title_activity': job.job, 'teamlead': job.team_leader,
+                           'duration': job.work_size, 'list_of_collaboration': job.collaborators,
+                           'is_finished': job.is_finished})
+        return render_template('work_log.html', works=render)
+    return '<br>'.join([render_template('base.html'),
+                        '''<h3 align="center">Пожалуйста войдите в аккаунт
+                         для просмотра информации о состоянии работ</h3>'''])
 
 
 @app.route("/cookie_test")
@@ -79,6 +93,51 @@ def reqister():
         return redirect('/login')
     return render_template('register.html', title='Регистрация', form=form)
 
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        user = db_sess.query(User).filter(User.email == form.email.data).first()
+        if user and user.check_password(form.password.data):
+            login_user(user, remember=form.remember_me.data)
+            return redirect("/")
+        return render_template('login.html',
+                               message="Неправильный логин или пароль",
+                               form=form)
+    return render_template('login.html', title='Авторизация', form=form)
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect("/")
+
+
+@app.route('/add_work', methods=['GET', 'POST'])
+def add_work():
+    form = AddWorkForm()
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        user = db_sess.query(User).filter(User.surname == form.surname.data,
+                                          User.name == form.name.data,
+                                          User.position == form.position.data).first()
+        if user and user.check_password(form.password.data):
+            job = Jobs(team_leader=user.id,
+                       job=form.job.data,
+                       work_size=form.work_size.data,
+                       collaborators=form.collaborators_list.data,
+                       start_date=form.start_date.data,
+                       is_finished=False)
+            db_sess.add(job)
+            db_sess.commit()
+            return redirect("/")
+        return render_template('add_work.html',
+                               message="Неправильный логин или пароль",
+                               form=form)
+    return render_template('add_work.html', title='Авторизация', form=form)
 
 if __name__ == '__main__':
     main()
