@@ -1,4 +1,4 @@
-from flask import Flask, request, make_response, render_template, redirect
+from flask import Flask, request, make_response, render_template, redirect, abort
 from data import db_session
 from data.users import User
 from data.jobs import Jobs
@@ -121,23 +121,65 @@ def add_work():
     form = AddWorkForm()
     if form.validate_on_submit():
         db_sess = db_session.create_session()
-        user = db_sess.query(User).filter(User.surname == form.surname.data,
-                                          User.name == form.name.data,
-                                          User.position == form.position.data).first()
-        if user and user.check_password(form.password.data):
-            job = Jobs(team_leader=user.id,
-                       job=form.job.data,
-                       work_size=form.work_size.data,
-                       collaborators=form.collaborators_list.data,
-                       start_date=form.start_date.data,
-                       is_finished=False)
-            db_sess.add(job)
+        # user = db_sess.query(User).filter(User.surname == form.surname.data,
+        #                                           User.name == form.name.data,
+        #                                           User.position == form.position.data).first()
+        #         if user and user.check_password(form.password.data):
+        #             job = Jobs(team_leader=user.id,
+        #                        job=form.job.data,
+        #                        work_size=form.work_size.data,
+        #                        collaborators=form.collaborators_list.data,
+        #                        start_date=form.start_date.data,
+        #                        is_finished=False)
+        job = Jobs(team_leader=current_user.id,
+                   job=form.job.data,
+                   work_size=form.work_size.data,
+                   collaborators=form.collaborators_list.data,
+                   start_date=form.start_date.data,
+                   is_finished=form.is_finished.data,
+                   end_date=form.end_date.data)
+        db_sess.add(job)
+        db_sess.commit()
+        return redirect("/")
+    return render_template('add_work.html', title='Добавление работы', form=form)
+
+
+@app.route('/edit_work/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_work(id):
+    form = AddWorkForm()
+    if request.method == "GET":
+        db_sess = db_session.create_session()
+        job = db_sess.query(Jobs).filter(Jobs.id == id).first()
+        if job and job.team_leader == (current_user.id or 1):
+            form.job.data = job.job
+            form.work_size.data = job.work_size
+            form.collaborators_list.data = job.collaborators
+            form.start_date.data = job.start_date
+            form.is_finished.data = job.is_finished
+            form.end_date.data = job.end_date
+
+        else:
+            abort(404)
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        job = db_sess.query(Jobs).filter(Jobs.id == id).first()
+        if job and current_user.id == (job.team_leader or 1):
+            job.job = form.job.data
+            job.work_size = form.work_size.data
+            job.collaborators = form.collaborators_list.data
+            job.start_date = form.start_date.data
+            job.is_finished = form.is_finished.data
+            job.end_date = form.end_date.data
             db_sess.commit()
-            return redirect("/")
-        return render_template('add_work.html',
-                               message="Неправильный логин или пароль",
-                               form=form)
-    return render_template('add_work.html', title='Авторизация', form=form)
+            return redirect('/')
+        else:
+            abort(404)
+    return render_template('add_work.html',
+                           title='Редактирование работы',
+                           form=form
+                           )
+
 
 if __name__ == '__main__':
     main()
