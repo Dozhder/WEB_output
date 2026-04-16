@@ -4,7 +4,7 @@
   <h2 style="text-align: center">Work Log</h2>
   {% for work in works %}
     <table align="center" style="table-layout: fixed; width: 70%; text-align: center">
-      <caption style="font-size: 48; caption-side: top; font-color: black; text-align: center">Action # {{ work["id_action"] }}</caption>
+      <caption style="font-size: 48; caption-side: top; font-color: black; text-align: center">Action # {{ work.id }}</caption>
       <thead>
         <tr style="background-color: gray">
           <th>Title of activity</th>
@@ -16,11 +16,11 @@
       </thead>
       <tbody>
         <tr style="background-color: lightblue">
-          <td>{{ work["title_activity"] }}</td>
-          <td>{{ work["teamlead"] }}</td>
-          <td>{{ work["duration"] }}</td>
-          <td>{{ work["list_of_collaboration"] }}</td>
-          {% if work["is_finished"] == True %}
+          <td>{{ work.job }}</td>
+          <td>{{ work.team_leader }}</td>
+          <td>{{ work.work_size }}</td>
+          <td>{{ work.collaborators }}</td>
+          {% if work.is_finished == True %}
                 <td style="background-color: #9966cc">is finished</td>
           {% else %}
                 <td style="background-color: #9966cc">is not finished</td>
@@ -28,6 +28,16 @@
         </tr>
       </tbody>
     </table>
+    {% if current_user.is_authenticated and current_user.id == (work.team_leader or 1) %}
+      <div align="center">
+          <a href="/edit_work/{{ work.id }}" class="btn btn-warning">
+              Изменить
+          </a>
+          <a href="/delete_work/{{ work.id }}" class="btn btn-danger">
+              Удалить
+          </a>
+      </div>
+    {% endif %}
     <br>
   {% endfor %}
 {% endblock %}

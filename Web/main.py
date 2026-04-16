@@ -40,9 +40,7 @@ def home():
         db_sess = db_session.create_session()
         render = []
         for job in db_sess.query(Jobs).all():
-            render.append({'id_action': job.id, 'title_activity': job.job, 'teamlead': job.team_leader,
-                           'duration': job.work_size, 'list_of_collaboration': job.collaborators,
-                           'is_finished': job.is_finished})
+            render.append(job)
         return render_template('work_log.html', works=render)
     return '<br>'.join([render_template('base.html'),
                         '''<h3 align="center">Пожалуйста войдите в аккаунт
@@ -179,6 +177,19 @@ def edit_work(id):
                            title='Редактирование работы',
                            form=form
                            )
+
+
+@app.route('/delete_work/<int:id>', methods=['GET', 'POST'])
+@login_required
+def news_delete(id):
+    db_sess = db_session.create_session()
+    job = db_sess.query(Jobs).filter(Jobs.id == id).first()
+    if job and job.team_leader == (current_user.id or 1):
+        db_sess.delete(job)
+        db_sess.commit()
+    else:
+        abort(404)
+    return redirect('/')
 
 
 if __name__ == '__main__':
