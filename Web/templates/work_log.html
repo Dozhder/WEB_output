@@ -2,6 +2,9 @@
 
 {% block content %}
   <h2 style="text-align: center">Work Log</h2>
+  <div align="center">
+      <a href="/add_work" class="btn btn-secondary">Add Work</a>
+  </div>
   {% for work in works %}
     <table align="center" style="table-layout: fixed; width: 70%; text-align: center">
       <caption style="font-size: 48; caption-side: top; font-color: black; text-align: center">Action # {{ work.id }}</caption>
@@ -31,10 +34,10 @@
     {% if current_user.is_authenticated and current_user.id == (work.team_leader or 1) %}
       <div align="center">
           <a href="/edit_work/{{ work.id }}" class="btn btn-warning">
-              Изменить
+              Edit Work
           </a>
           <a href="/delete_work/{{ work.id }}" class="btn btn-danger">
-              Удалить
+              Delete Work
           </a>
       </div>
     {% endif %}
