@@ -1,9 +1,10 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h2 style="text-align: center">Work Log</h2>
+  <h2 style="text-align: center">Work List</h2>
   <div align="center">
       <a href="/add_work" class="btn btn-secondary">Add Work</a>
+      <a href="/department" class="btn btn-secondary">Department list</a>
   </div>
   {% for work in works %}
     <table align="center" style="table-layout: fixed; width: 70%; text-align: center">
