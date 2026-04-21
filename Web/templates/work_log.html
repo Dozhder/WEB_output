@@ -15,6 +15,7 @@
           <th>Team leader</th>
           <th>Duration</th>
           <th>List of collaborators</th>
+          <th>Hazard Category</th>
           <th>Is finished</th>
         </tr>
       </thead>
@@ -24,8 +25,9 @@
           <td>{{ work.team_leader }}</td>
           <td>{{ work.work_size }}</td>
           <td>{{ work.collaborators }}</td>
+          <td>{{ work.hazard }}</td>
           {% if work.is_finished == True %}
-                <td style="background-color: #9966cc">is finished</td>
+                <td style="background-color: #68de8a">is finished</td>
           {% else %}
                 <td style="background-color: #9966cc">is not finished</td>
           {% endif %}

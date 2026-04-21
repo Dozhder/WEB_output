@@ -13,6 +13,7 @@ class AddWorkForm(FlaskForm):
     job = StringField('Job', validators=[DataRequired()])
     work_size = StringField('Work Size', validators=[DataRequired()])
     collaborators_list = StringField('Collaborators List per id', validators=[DataRequired()])
+    hazard = StringField('Hazard Category', validators=[DataRequired()])
     start_date = DateField('Start Date', validators=[DataRequired()], default=dt.datetime.now)
     is_finished = BooleanField('Is Finished')
     end_date = DateField('End Date', validators=[DataRequired()], default=dt.datetime.now)

@@ -135,6 +135,7 @@ def add_work():
                    job=form.job.data,
                    work_size=form.work_size.data,
                    collaborators=form.collaborators_list.data,
+                   hazard=form.hazard.data,
                    start_date=form.start_date.data,
                    is_finished=form.is_finished.data,
                    end_date=form.end_date.data)
@@ -155,6 +156,7 @@ def edit_work(id):
             form.job.data = job.job
             form.work_size.data = job.work_size
             form.collaborators_list.data = job.collaborators
+            form.hazard.data = job.hazard
             form.start_date.data = job.start_date
             form.is_finished.data = job.is_finished
             form.end_date.data = job.end_date
@@ -168,6 +170,7 @@ def edit_work(id):
             job.job = form.job.data
             job.work_size = form.work_size.data
             job.collaborators = form.collaborators_list.data
+            job.hazard = form.hazard.data
             job.start_date = form.start_date.data
             job.is_finished = form.is_finished.data
             job.end_date = form.end_date.data
