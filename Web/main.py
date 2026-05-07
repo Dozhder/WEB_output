@@ -1,18 +1,34 @@
+# flask
 from flask import Flask, request, make_response, render_template, redirect, abort
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+from flask_restful import reqparse, abort, Api, Resource
+
+# import from data
 from data import db_session
 from data.users import User
 from data.jobs import Jobs
 from data.department import Department
+
+# datetime
 import datetime as dt
+
+# import from forms
 from forms.register import RegisterForm
-from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from forms.login import LoginForm
 from forms.add_work import AddWorkForm
 from forms.add_department import AddDepartmentForm
 
+# import API resource
+import users_resource
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
+# api
+api = Api(app)
+# add user resources
+api.add_resource(users_resource.UserResource, '/api/v2/users/<int:user_id>')
+api.add_resource(users_resource.UserListResource, '/api/v2/users')
 
 db_session.global_init('db/data_test.sqlite3')
 
