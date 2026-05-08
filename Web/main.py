@@ -20,6 +20,7 @@ from forms.add_department import AddDepartmentForm
 
 # import API resource
 import users_resource
+import jobs_resource
 
 
 app = Flask(__name__)
@@ -27,8 +28,11 @@ app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 # api
 api = Api(app)
 # add user resources
-api.add_resource(users_resource.UserResource, '/api/v2/users/<int:user_id>')
-api.add_resource(users_resource.UserListResource, '/api/v2/users')
+api.add_resource(users_resource.UserResource, '/api/users/<int:user_id>')
+api.add_resource(users_resource.UserListResource, '/api/users')
+# add job resources
+api.add_resource(jobs_resource.JobResource, '/api/jobs/<int:job_id>')
+api.add_resource(jobs_resource.JobListResource, '/api/jobs')
 
 db_session.global_init('db/data_test.sqlite3')
 
@@ -39,7 +43,9 @@ login_manager.init_app(app)
 @login_manager.user_loader
 def load_user(user_id):
     db_sess = db_session.create_session()
-    return db_sess.get(User,user_id)
+    us = db_sess.get(User, user_id)
+    db_sess.close()
+    return us
 
 
 def main():
@@ -59,6 +65,7 @@ def home():
         render = []
         for job in db_sess.query(Jobs).all():
             render.append(job)
+        db_sess.close()
         return render_template('work_log.html', works=render)
     return '<br>'.join([render_template('base.html'),
                         '''<h3 align="center">Пожалуйста войдите в аккаунт
@@ -91,6 +98,7 @@ def reqister():
                                    message="Пароли не совпадают")
         db_sess = db_session.create_session()
         if db_sess.query(User).filter(User.email == form.email.data).first():
+            db_sess.close()
             return render_template('register.html', title='Регистрация',
                                    form=form,
                                    message="Такой пользователь уже есть")
@@ -106,6 +114,7 @@ def reqister():
         user.set_password(form.password.data)
         db_sess.add(user)
         db_sess.commit()
+        db_sess.close()
         return redirect('/login')
     return render_template('register.html', title='Регистрация', form=form)
 
@@ -116,6 +125,7 @@ def login():
     if form.validate_on_submit():
         db_sess = db_session.create_session()
         user = db_sess.query(User).filter(User.email == form.email.data).first()
+        db_sess.close()
         if user and user.check_password(form.password.data):
             login_user(user, remember=form.remember_me.data)
             return redirect("/")
@@ -157,6 +167,7 @@ def add_work():
                    end_date=form.end_date.data)
         db_sess.add(job)
         db_sess.commit()
+        db_sess.close()
         return redirect("/")
     return render_template('add_work.html', title='Добавление работы', form=form)
 
@@ -176,7 +187,6 @@ def edit_work(id):
             form.start_date.data = job.start_date
             form.is_finished.data = job.is_finished
             form.end_date.data = job.end_date
-
         else:
             abort(404)
     if form.validate_on_submit():
@@ -191,6 +201,7 @@ def edit_work(id):
             job.is_finished = form.is_finished.data
             job.end_date = form.end_date.data
             db_sess.commit()
+            db_sess.close()
             return redirect('/')
         else:
             abort(404)
@@ -208,6 +219,7 @@ def delete_work(id):
     if job and job.team_leader == (current_user.id or 1):
         db_sess.delete(job)
         db_sess.commit()
+        db_sess.close()
     else:
         abort(404)
     return redirect('/')
@@ -220,6 +232,7 @@ def departament_list():
         render = []
         for department in db_sess.query(Department).all():
             render.append(department)
+        db_sess.close()
         return render_template('departament.html', departments=render)
     return '<br>'.join([render_template('base.html'),
                         '''<h3 align="center">Пожалуйста войдите в аккаунт
@@ -258,11 +271,11 @@ def edit_department(id):
     if request.method == "GET":
         db_sess = db_session.create_session()
         department = db_sess.query(Department).filter(Department.id == id).first()
+        db_sess.close()
         if department and department.chief == (current_user.id or 1):
             form.title.data = department.title
             form.members.data = department.members
             form.department_email.data = department.email
-
         else:
             abort(404)
     if form.validate_on_submit():
@@ -273,6 +286,7 @@ def edit_department(id):
             department.members = form.members.data
             department.email = form.department_email.data
             db_sess.commit()
+            db_sess.close()
             return redirect('/department')
         else:
             abort(404)
@@ -290,6 +304,7 @@ def department_delete(id):
     if department and department.chief == (current_user.id or 1):
         db_sess.delete(department)
         db_sess.commit()
+        db_sess.close()
     else:
         abort(404)
     return redirect('/department')

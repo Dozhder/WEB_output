@@ -17,6 +17,6 @@ class Jobs(SqlAlchemyBase, SerializerMixin):
     hazard = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     start_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
     end_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
-    is_finished = sqlalchemy.Column(sqlalchemy.Boolean, nullable=True)\
+    is_finished = sqlalchemy.Column(sqlalchemy.Boolean, nullable=True)
 
     user = orm.relationship('User')
